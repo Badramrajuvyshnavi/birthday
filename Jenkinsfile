@@ -9,14 +9,14 @@ pipeline{
         }
         stage ("Docker Login"){
             steps{
-                bat "docker login -u vaishnavikarra -p Harekrishna8*"
+                bat "docker login -u vyshnavi1201 -p Vyshnavi@143"
             }
         }
         stage("push Docker Iamge to Docker Hub"){
             steps {
                 echo "push Docker Image to docker hub"
-                bat "docker tag kubeapp:v2 vaishnavikarra/newssearch:latest"
-                bat "docker push vaishnavikarra/newssearch:latest"
+                bat "docker tag kubeapp:v2 vyshnavi1201/newssearch:latest"
+                bat "docker push vyshnavi1201/newssearch:latest"
 
 
             }
