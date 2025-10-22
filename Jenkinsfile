@@ -9,7 +9,7 @@ pipeline{
         }
         stage ("Docker Login"){
             steps{
-                bat "docker login -u vyshnavi1201 -p Vyshnavi@1201"
+                bat "docker login -u vyshnavi1201 -p Vyshnavi@143"
             }
         }
         stage("push Docker Iamge to Docker Hub"){
