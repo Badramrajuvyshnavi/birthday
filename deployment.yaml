@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: charithasree37/cs1:latest
+        image: vyshnavi1201/birthday:latest
         ports:
         - containerPort: 5000
