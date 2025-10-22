@@ -1,60 +1,46 @@
-pipeline {
+pipeline{
     agent any
-
-    environment {
-        IMAGE_NAME = "app"
-        IMAGE_TAG = "v2"
-        DOCKER_REPO = "charithasree37/cs1"
-    }
-
-    stages {
-        stage("Docker Login") {
-            steps {
-                echo "Logging into Docker Hub..."
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
-                }
+    stages{
+        stage ("Build Docker Image"){
+            steps{
+                echo "Build Docker Image"
+                bat "docker build -t kubeapp:v2 ."
             }
         }
-
-        stage("Build Docker Image") {
-            steps {
-                echo "Building Docker Image..."
-                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+        stage ("Docker Login"){
+            steps{
+                bat "docker login -u shivanibonagiri -p E25cbi3u@"
             }
         }
-
-        stage("Push Docker Image to Docker Hub") {
+        stage("push Docker Iamge to Docker Hub"){
             steps {
-                echo "Tagging and pushing image..."
-                bat '''
-                    docker tag %IMAGE_NAME%:%IMAGE_TAG% %DOCKER_REPO%:latest
-                    docker push %DOCKER_REPO%:latest
-                '''
+                echo "push Docker Image to docker hub"
+                bat "docker tag kubeapp:v2 shivanibonagiri/strength:latest"
+                bat "docker push shivanibonagiri/strength:latest"
+
+
             }
         }
-
-        stage("Deploy to Kubernetes") {
-            steps {
-                echo "Deploying to Kubernetes..."
-                bat 'kubectl apply -f deployment.yaml --validate=false'
-                bat 'kubectl apply -f service.yaml'
+        stage("Deploy to Kubernetes"){
+            steps{
+                bat "kubectl apply -f deployment.yaml --validate=false"
+                bat "kubectl apply -f service.yaml"
             }
         }
-        stage('Restart Deployment'){
-              steps{
-                  echo "Restarting Deployment to pick up new image.."
-                  bat "Kubectl rollout restart deployment/app-deployment"
-              }
+        stage('Restart Deployment') {
+            steps {
+                echo "Restarting Deployment to pick up new image..."
+                bat "kubectl rollout restart deployment/kubeapp-deployment"
+            }
         }
     }
+    post{
+        success{
+            echo 'Pipeline completed scucessfull!'
 
-    post {
-        success {
-            echo '✅ Pipeline completed successfully!'
         }
-        failure {
-            echo '❌ Pipeline failed. Please check logs.'
+        failure{
+            echo "Pipeline failed.Please check the logs."
         }
     }
 }
